@@ -24,20 +24,19 @@ def compute_orders(pumps):
 def start_shaking():
     # here we can start the led
     print('shaking begins')
-    for initCmd in settings.relay_init:
-        print(initCmd)
+    for initCmd in settings.relay_init.values():
+        # print(initCmd)
+        os.system(initCmd)
 
 def activate_pump(pump_nb):
     print('start pump %d' % pump_nb)
     # execute the gpio command (ex:'gpio write 0 0')
-    #os.system(settings.relay_cmd[pump_nb] % 0)
-    print(settings.relay_cmd[pump_nb] % True)
+    os.system(settings.relay_cmd[pump_nb] % 0)
 
 def stop_pump(pump_nb):
     print('stop pump %d' % pump_nb)
     # execute the gpio command (ex:'gpio write 0 1')
-    #os.system(settings.relay_cmd[pump_nb] % 1)
-    print(settings.relay_cmd[pump_nb] % False)
+    os.system(settings.relay_cmd[pump_nb] % 1)
 
 def stop_shaking():
     # here we can stop the led
