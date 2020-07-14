@@ -51,7 +51,7 @@ def remove_drink(id):
     drinks_service.delete(id)
     return make_response(jsonify({}), 204)
 
-# COKTAILS ENDPOINT
+# COKTAILS ENDPOINTS
 @app.route('/coktails', methods=['GET'])
 def list_coktails():
     coktails = coktails_service.list()
@@ -59,10 +59,20 @@ def list_coktails():
 
 @app.route('/coktails/<string:id>', methods=['GET'])
 def get_coktail(id):
-    drink = coktails_service.get(id)
-    if drink == None:
+    coktail = coktails_service.get(id)
+    if coktail == None:
         abort(404)
-    return jsonify({'data':drink})
+    return jsonify({'data':coktail})
+
+@app.route('/coktails/<string:id>', methods=['PUT'])
+def modify_coktail(id):
+    if not request.json:
+        abort(400)
+    coktail = coktails_service.get(id)
+    if coktail == None:
+        abort(404)
+    coktail = coktails_service.modify(id, request.json)
+    return make_response(jsonify(coktail), 200)
 
 @app.route('/coktails/<string:id>/serve', methods=['POST'])
 def serve_coktail(id):
