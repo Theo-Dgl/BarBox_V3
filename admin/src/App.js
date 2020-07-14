@@ -1,26 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import DataProvider from "./DataProvider";
+import { Admin, Resource, EditGuesser, ListGuesser } from 'react-admin';
+import { DrinkList } from "./resources/DrinksList";
+import { DrinkEdit } from "./resources/DrinksEdit";
+import { DrinkCreate } from "./resources/DrinksCreate";
+import DrinkIcon from '@material-ui/icons/LocalDrink';
+import CoktailIcon from '@material-ui/icons/LocalBar';
+import { CoktailList } from "./resources/CoktailList";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => (
+    <Admin dataProvider={DataProvider('')}>
+        <Resource name="drinks" list={DrinkList} edit={DrinkEdit} create={DrinkCreate} icon={DrinkIcon}/>
+        <Resource name="coktails" list={CoktailList} edit={EditGuesser} create={DrinkCreate} icon={CoktailIcon}/>
+    </Admin>
+);
 
 export default App;
