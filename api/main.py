@@ -16,60 +16,70 @@ def not_found(error):
 # DRINKS ENDPOINT
 @app.route('/drinks', methods=['GET'])
 def list_drinks():
-    dictionnaire = drinks_service.list()
-    return jsonify(dictionnaire)
+    drinks = drinks_service.list()
+    return jsonify({'data':drinks})
 
-@app.route('/drinks/<string:uuid>', methods=['GET'])
-def get_drink(uuid):
-    dictionnaire = drinks_service.get(uuid)
-    if dictionnaire == None:
+@app.route('/drinks/<string:id>', methods=['GET'])
+def get_drink(id):
+    drink = drinks_service.get(id)
+    if drink == None:
         abort(404)
-    return jsonify(dictionnaire)
+    return jsonify({'data': drink})
 
 @app.route('/drinks', methods=['POST'])
 def add_drink():
     if not request.json or not 'pump_number' in request.json or not 'name' in request.json or not 'total_volume' in request.json:
         abort(400)
-    drinks_service.add(request.json)
-    return make_response(jsonify({}), 204)
+    drink = drinks_service.add(request.json)
+    return make_response(jsonify(drink), 200)
 
-@app.route('/drinks/<string:uuid>', methods=['PUT'])
-def modify_drink(uuid):
+@app.route('/drinks/<string:id>', methods=['PUT'])
+def modify_drink(id):
     if not request.json:
         abort(400)
-    dictionnaire = drinks_service.get(uuid)
+    drink = drinks_service.get(id)
+    if drink == None:
+        abort(404)
+    drink = drinks_service.modify(id, request.json)
+    return make_response(jsonify(drink), 200)
+
+@app.route('/drinks/<string:id>', methods=['DELETE'])
+def remove_drink(id):
+    dictionnaire = drinks_service.get(id)
     if dictionnaire == None:
         abort(404)
-    drinks_service.modify(uuid, request.json)
+    drinks_service.delete(id)
     return make_response(jsonify({}), 204)
 
-@app.route('/drinks/<string:uuid>', methods=['DELETE'])
-def remove_drink(uuid):
-    dictionnaire = drinks_service.get(uuid)
-    if dictionnaire == None:
-        abort(404)
-    drinks_service.delete(uuid)
-    return make_response(jsonify({}), 204)
-
-# COKTAILS ENDPOINT
+# COKTAILS ENDPOINTS
 @app.route('/coktails', methods=['GET'])
 def list_coktails():
-    dictionnaire = coktails_service.list()
-    return jsonify(dictionnaire)
+    coktails = coktails_service.list()
+    return jsonify({'data':coktails})
 
-@app.route('/coktails/<string:uuid>', methods=['GET'])
-def get_coktail(uuid):
-    dictionnaire = coktails_service.get(uuid)
+@app.route('/coktails/<string:id>', methods=['GET'])
+def get_coktail(id):
+    coktail = coktails_service.get(id)
+    if coktail == None:
+        abort(404)
+    return jsonify({'data':coktail})
+
+@app.route('/coktails/<string:id>', methods=['PUT'])
+def modify_coktail(id):
+    if not request.json:
+        abort(400)
+    coktail = coktails_service.get(id)
+    if coktail == None:
+        abort(404)
+    coktail = coktails_service.modify(id, request.json)
+    return make_response(jsonify(coktail), 200)
+
+@app.route('/coktails/<string:id>/serve', methods=['POST'])
+def serve_coktail(id):
+    dictionnaire = coktails_service.get(id)
     if dictionnaire == None:
         abort(404)
-    return jsonify(dictionnaire)
-
-@app.route('/coktails/<string:uuid>/serve', methods=['POST'])
-def serve_coktail(uuid):
-    dictionnaire = coktails_service.get(uuid)
-    if dictionnaire == None:
-        abort(404)
-    coktails_service.serve(uuid)    
+    coktails_service.serve(id)    
     return make_response(jsonify({}), 204)
 
 @app.route('/coktails', methods=['POST'])

@@ -10,11 +10,11 @@ def list():
         data = json.load(json_file)
         return data
 
-def get(uuid):
+def get(id):
     with open(JSON_FILE_PATH) as json_file:
         data = json.load(json_file)
         for drink in data:
-            if drink['uuid'] == uuid: return drink
+            if drink['id'] == id: return drink
         return None
 
 def add(new_drink):
@@ -22,26 +22,26 @@ def add(new_drink):
         data = json.load(file)
         file.seek(0)
         file.truncate()
-        new_drink['uuid'] = util.get_uuid()
+        new_drink['id'] = util.get_uuid()
         data.append(new_drink)
         json.dump(data, file)
         return True
 
-def delete(uuid):
+def delete(id):
     with open(JSON_FILE_PATH, "r+") as file:
         data = json.load(file)
         for index, drink in enumerate(data):
-            if drink['uuid'] == uuid : del data[index]
+            if drink['id'] == id : del data[index]
         file.seek(0)
         file.truncate()
         json.dump(data, file)
         return True
 
-def modify(uuid, new_value):
+def modify(id, new_value):
     with open(JSON_FILE_PATH, "r+") as file:
         data = json.load(file)
         for index, drink in enumerate(data):
-            if drink['uuid'] == uuid : 
+            if drink['id'] == id : 
                 for new_val in new_value.keys():
                     print(new_val)
                     data[index][new_val] = new_value[new_val]
@@ -50,16 +50,16 @@ def modify(uuid, new_value):
         json.dump(data, file)
         return True
 
-def serve(uuid):
+def serve(id):
     command_line = 'python3 ../cli/barbox.py'
-    coktail = get(uuid)
+    coktail = get(id)
     for drink_dose in coktail['drinks']:
-        drink = drinks_service.get(drink_dose['uuid'])
+        drink = drinks_service.get(drink_dose['id'])
         # TODO: Check if the drink volume is available for the coktail.
 
         # refresh the available volume of the served drinks
         drink['volume_left'] -= drink_dose['volume']
-        drinks_service.modify(drink['uuid'], drink)
+        drinks_service.modify(drink['id'], drink)
         duration = util.get_valve_opening_duration(drink_dose['volume'])
         command_line += ' --pump %s %s' % (drink['pump_number'], duration)
     os.system(command_line)
