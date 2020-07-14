@@ -1,4 +1,3 @@
-import { stringify } from 'query-string';
 import { fetchUtils } from 'ra-core';
 
 /**
@@ -43,41 +42,17 @@ const DataProvider = (apiUrl, httpClient = fetchUtils.fetchJson) => ({
         })),
 
     getMany: (resource, params) => {
-        const query = {
-            filter: JSON.stringify({ id: params.ids }),
-        };
-        const url = `${apiUrl}/${resource}?${stringify(query)}`;
-        return httpClient(url).then(({ json }) => ({ data: json }));
+        const url = `${apiUrl}/${resource}`;
+        return httpClient(url).then(({ json }) => ({ data: json.data }));
     },
 
-    getManyReference: (resource, params) => {
-        const { page, perPage } = params.pagination;
-        const { field, order } = params.sort;
-        const query = {
-            sort: JSON.stringify([field, order]),
-            range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
-            filter: JSON.stringify({
-                ...params.filter,
-                [params.target]: params.id,
-            }),
-        };
-        const url = `${apiUrl}/${resource}?${stringify(query)}`;
+    getManyReference: (resource) => {
+        const url = `${apiUrl}/${resource}`;
 
         return httpClient(url).then(({ headers, json }) => {
-            if (!headers.has('content-range')) {
-                throw new Error(
-                    'The Content-Range header is missing in the HTTP Response. The simple REST data provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare Content-Range in the Access-Control-Expose-Headers header?'
-                );
-            }
             return {
-                data: json,
-                total: parseInt(
-                    headers
-                        .get('content-range')
-                        .split('/')
-                        .pop(),
-                    10
-                ),
+                data: json.data,
+                total: json.data.length,
             };
         });
     },
@@ -88,7 +63,7 @@ const DataProvider = (apiUrl, httpClient = fetchUtils.fetchJson) => ({
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({ data: json })),
 
-    // simple-rest doesn't handle provide an updateMany route, so we fallback to calling update n times instead
+    // we doesn't handle provide an updateMany route, so we fallback to calling update n times instead
     updateMany: (resource, params) =>
         Promise.all(
             params.ids.map(id =>
@@ -112,7 +87,7 @@ const DataProvider = (apiUrl, httpClient = fetchUtils.fetchJson) => ({
             method: 'DELETE',
         }).then(({ json }) => ({ data: json })),
 
-    // simple-rest doesn't handle filters on DELETE route, so we fallback to calling DELETE n times instead
+    // we doesn't handle filters on DELETE route, so we fallback to calling DELETE n times instead
     deleteMany: (resource, params) =>
         Promise.all(
             params.ids.map(id =>

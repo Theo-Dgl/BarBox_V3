@@ -1,15 +1,18 @@
 import * as React from "react";
-import { List, Datagrid, TextField, ArrayField, SingleFieldList, ChipField, ImageField } from 'react-admin';
+import { List, Datagrid, TextField, ArrayField, ChipField, ReferenceField, ImageField } from 'react-admin';
 
 export const CoktailList = props => (
     <List {...props}>
         <Datagrid rowClick="edit">
-            <TextField source="name" />
             <ImageField source="image" />
+            <TextField source="name" />
             <ArrayField source="drinks">
-                <SingleFieldList>
-                    <ChipField source="id" />
-                </SingleFieldList>
+                <Datagrid>
+                    <ReferenceField label="Drinks" source="id" reference="drinks">
+                        <ChipField source="name" />
+                    </ReferenceField>
+                    <TextField source="volume"/>
+                </Datagrid>
             </ArrayField>
         </Datagrid>
     </List>

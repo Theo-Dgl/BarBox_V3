@@ -1,18 +1,20 @@
 import * as React from "react";
-import { Edit, SimpleForm, TextInput, NumberInput } from 'react-admin';
+import { AmountSelector } from "../components/amountSelector";
+import { Edit, SimpleForm, TextInput, NumberInput, ArrayInput, SimpleFormIterator, ReferenceInput, SelectInput } from 'react-admin';
 
 export const CoktailEdit = props => (
     <Edit {...props}>
         <SimpleForm>
+            <TextInput source="name" />
+            <TextInput source="image" />
             <ArrayInput source="drinks">
                 <SimpleFormIterator>
-                    <TextInput source="id" />
-                    <NumberInput source="volume" />
+                    <ReferenceInput label="Drinks" source="id" reference="drinks">
+                        <SelectInput optionText="name" />
+                    </ReferenceInput>
+                    <AmountSelector source="volume"/>
                 </SimpleFormIterator>
             </ArrayInput>
-            <TextInput source="id" />
-            <TextInput source="image" />
-            <TextInput source="name" />
         </SimpleForm>
     </Edit>
 );
